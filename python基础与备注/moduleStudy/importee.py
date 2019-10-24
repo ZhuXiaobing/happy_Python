@@ -19,6 +19,12 @@ class Person(object):
     def age(self, age):
         self._age = age
 
+    # def __setattr__(self, key, value):
+    #     print("set attr...")
+    #
+    # def __delattr__(self, item):
+    #     print("del attr...")
+
     def __str__(self):
         return "name:%s, age=%d\n" % (self._name, self._age)
 

@@ -1,3 +1,5 @@
+import pprint
+
 # 直接引入moduleStudy模块
 import python基础与备注.moduleStudy as moduleStudy
 
@@ -10,5 +12,10 @@ from python基础与备注.moduleStudy import importee
 p = importee.Person("zhuxiaobing", 28)
 print(p)
 # 不建议直接访问
-print(p._name)
-importee.sayHello(p)
+# print(p._name)
+# importee.sayHello(p)
+
+
+# 输出对象的字典
+pprint.pprint(p.__dict__)
+pprint.pprint(importee.Person.__dict__)

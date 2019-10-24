@@ -1,3 +1,5 @@
+import pprint
+
 """
 int(),str(),bool()...这些都是类，以小写字母开头，是因为这些都python内置类。自定义等非内置类以大写字母+驼峰标识表示。
 a = int(10) 等价于 a = 10
@@ -96,9 +98,12 @@ Python中的特殊方法（魔术方法）小结：
     2：特殊方法调用时机
 
     常用的魔法函数：
-    1:__str__():在尝试将对象转换为字符串时会调用，类似于”>>>print(a)”
+    1:__str__():在尝试将对象转换为字符串时会调用，类似于”>>>print(a)”。object类的默认实现调用的是__repr__()
     2:__repr__():会在当前对象调用repr(obj)时调用此方法，指定对象在交互模式中直接输出的效果，类似于”>>>a“
-
+    3:__eq__():
+    4:__hash__():
+        所有类默认具有__eq__与__hash__，所有类的实例在默认实现中都不相等。如果x==y,则"x is y"和"hash(x)==hasy(y)"都成立。
+        如果一个类实现了__eq__(),则__hash__默认为None，其类的对象不支持hash相关操作，如果要继承父类__hash__()，必须显示指定：__hash__ = <ParentClass>.__hash__
 
 
 类似于函数，python的类也可以被装饰。
@@ -108,4 +113,86 @@ Python中的特殊方法（魔术方法）小结：
     等价于
     class Foo: pass
     Foo = f1(arg)(f2(Foo))
+
+
+特殊说明：
+    1：类的内部，实例使用字典来实现的，可以用示例对象的"__dict__"访问该字典，对对象属性的修改会反应到该字典中。
+    2：python实例属性查找设计到两个魔术方法：
+        2.1:__getattribute__():此方法具有绝对高优先级，
+            此方法的查找顺序是：data descriptor --> 实例字典 --> non-data descriptor.
+        2.2:__getattr__():只有在__getattribute__()找不到对应的属性时，才会调用此方法查找属性。这是一个兜底方法。
+    3：del x 并不等同于x.__del__():
+        del x 只会将x对应对象的引用减少1
+        x.__del__()只在x对象的引用数为0时才会调用。
+    4：尤其注意官方文档"3.3.9节：特殊方法的查找"。
+        在通过对象隐式调用特殊方法的时候，是会绕过__getattribute__方法，即不去调用此方法。
 """
+
+print("\n" + "*" * 20 + "以下测试说明属性访问优先级顺序是：data descriptor --> 实例字典 --> non-data descriptor" + "*" * 20)
+
+
+# 数据描述符（定义了__set__ 和/或 __delete__）
+class Name(object):
+    def __get__(self, instance, owner):
+        print("invoke Name get")
+        return instance.abc
+
+    def __set__(self, instance, value):
+        print("invoke Name set")
+        instance.abc = "数据描述符的固定值，实例无法改变"
+
+    def __set_name__(self, owner, name):
+        pass
+
+
+# 非数据描述符
+class Age(object):
+    def __get__(self, instance, owner):
+        print("invoke Name get")
+        return "实例字典中的只可以覆盖该值"
+
+
+# 测试类
+class Test(object):
+    name = Name()
+    age = Age()
+
+
+pprint.pprint(Test.__dict__)
+
+t = Test()
+t.name = "t1"
+t.age = "t1's age"
+pprint.pprint(t.__dict__)
+# 访问的是数据描述符，实例不可定制。
+print(t.name)
+# 访问的是非数据描述符，实例可定制
+print(t.age)
+
+t2 = Test()
+t2.name = "t2"
+t2.age = "t2's age"
+pprint.pprint(t2.__dict__)
+# 访问的是数据描述符，实例不可定制。
+print(t2.name)
+# 访问的是非数据描述符，实例可定制
+print(t2.age)
+# 删除实例字典中的属性，将调用非数据描述符中的数据。
+del t2.age
+print(t2.age)
+
+print("\n" + "*" * 20 + "以下测试__dict__和__slots__的关系" + "*" * 20)
+
+
+class SlotsTest(object):
+    # 若想SlotsTest的对象有__dict__属性，则必须把__dict__放入__slots__中。
+    __slots__ = ["age", "name", "__dict__"]
+
+
+s = SlotsTest()
+s.age = 10
+s.name = "hello"
+print("发现：__slots__中已经列举的属性age,name，不会出现在__dict__中。")
+print(s.__dict__)
+s.pk = "pk"
+print(s.__dict__)
