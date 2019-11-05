@@ -32,7 +32,8 @@ function exitOnError() {
 
 # 下载文件到目标目录
 # -P 执行下载目录
-wget -P "$TMP_DIR/" "$DICT_FILE_PATH/$DICT_FILE_NAME"
+# -O 指定下载之后的文件名
+wget -P "$TMP_DIR/" -O $DICT_FILE_NAME "$DICT_FILE_PATH/$DICT_FILE_NAME"
 exitOnError "Downloading dict file failed."
 
 # 文件从GBK转码为UTF8

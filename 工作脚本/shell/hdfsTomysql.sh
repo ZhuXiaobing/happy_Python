@@ -14,12 +14,12 @@ if [ ! $# == 1 ];then
 fi
 
 startDay=$1
-host="10.120.165.231"
+host="1.2.3.4"
 port="3306"
 pw="123456"
 user="root"
-db="feed_monitor"
-table="feed_custom_token"
+db="targetdb"
+table="targettable"
 
 # -s 静默模式
 # -f忽略出现错误的行，强制继续执行
