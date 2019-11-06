@@ -6,7 +6,7 @@
 #3：awk高级使用（不太好注释，直接看代码吧）
 
 # 配置文件统一外部化，推荐方式
-. /home/work/scripts/dbconf.sh
+. /dbconf.sh
 
 
 MYSQL="/home/work/local/mysql/bin/mysql"

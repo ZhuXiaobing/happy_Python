@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #脚本知识点
+# 启动脚本参数的处理（个数校验，参数值校验）
 # 函数参数个数判断， $#, 函数参数获取 $N
 # 字符串是否是数字校验：
 #
@@ -9,12 +10,21 @@
 # fi
 
 
+# 校验输入参数
+if [ ! $# == 1 ];then
+	echo "Usage: sh $0 <dbconf|dbconf_dev> &"
+	exit 0
+else
+	if [ $1 == "dbconf" -o $1 == "dbconf_dev" ];then
+	    # 加载数据库配置
+		. ./$1.sh
+	else
+		echo "Usage: sh $0 <dbconf|dbconf_dev> &"
+		exit 0
+	fi
+fi
 
-host="xx"
-port="xx"
-pw="xxx"
-user="xx"
-db="xx"
+
 baseSql="mysql -h${host} -u${user} -P${port} -D${db} -e  "
 export MYSQL_PWD=${pw}
 

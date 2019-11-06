@@ -14,11 +14,9 @@ if [ ! $# == 1 ];then
 fi
 
 startDay=$1
-host="1.2.3.4"
-port="3306"
-pw="123456"
-user="root"
-db="targetdb"
+
+# 数据库配置
+. /dbconf.sh
 table="targettable"
 
 # -s 静默模式
